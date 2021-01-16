@@ -12,7 +12,7 @@ TMPDIR="${HELM_SECRETS_DEC_TMP_DIR:-$(mktemp -d)}"
 QUIET="${HELM_SECRETS_QUIET:-false}"
 
 # Define the secret driver engine
-SECRET_DRIVER="${HELM_SECRETS_DRIVER:-sops}"
+SECRET_DRIVER="${HELM_SECRETS_DRIVER:-aws-secretsmanager}"
 
 # The suffix to use for decrypted files. The default can be overridden using
 # the HELM_SECRETS_DEC_SUFFIX environment variable.
