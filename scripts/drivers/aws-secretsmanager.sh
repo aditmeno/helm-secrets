@@ -17,17 +17,19 @@ _custom_driver_get_secret() {
     fi
 
     if ! aws sts get-caller-identity --output text; then
-        if [ -z ${AWS_SECRET_ACCESS_KEY} || -z ${AWS_ACCESS_KEY_ID} ]; then
-            if [ -z ${AWS_ROLE_ARN} || -z ${AWS_WEB_IDENTITY_TOKEN_FILE} ]; then
+        if [ -z ${AWS_SECRET_ACCESS_KEY} && -z ${AWS_ACCESS_KEY_ID} ]; then
+            if [ -z ${AWS_ROLE_ARN} && -z ${AWS_WEB_IDENTITY_TOKEN_FILE} ]; then
                 echo "Missing AWS Credential Environment Variables!"
                 exit 1
             fi
         fi
     fi
 
-    if [ -z ${AWS_DEFAULT_REGION} || -z ${AWS_REGION} ]; then
-        echo "Missing AWS Region where the Secrets exist"
-        exit 1
+    if ! aws sts get-caller-identity --output text; then
+        if [ -z ${AWS_DEFAULT_REGION} || -z ${AWS_REGION} ]; then
+            echo "Missing AWS Region where the Secrets exist"
+            exit 1
+        fi
     fi
 
     if [ ! -z ${AWS_ROLE_ARN} || ! -z ${AWS_WEB_IDENTITY_TOKEN_FILE} ]; then
