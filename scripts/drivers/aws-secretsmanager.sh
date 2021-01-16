@@ -49,9 +49,9 @@ _custom_driver_get_secret() {
         fi
     fi
 
-    if ! aws secretsmanager get-secret-value --secret-id ${_SECRET_ID} | jq --raw-output '.SecretString' | jq -r .{_SECRET_KEY}; then
+    if ! aws secretsmanager get-secret-value --secret-id ${_SECRET_ID} | jq --raw-output '.SecretString' | jq -r .${_SECRET_KEY}; then
         echo "Error while get secret from aws secrets manager!" >&2
-        echo aws secretsmanager get-secret-value --secret-id "${_SECRET_ID}" | jq --raw-output '.SecretString' | jq -r ."{_SECRET_KEY}" >&2
+        echo aws secretsmanager get-secret-value --secret-id "${_SECRET_ID}" | jq --raw-output '.SecretString' | jq -r ."${_SECRET_KEY}" >&2
         exit 1
     fi
 }
