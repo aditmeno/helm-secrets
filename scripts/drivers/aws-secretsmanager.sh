@@ -16,7 +16,7 @@ _custom_driver_get_secret() {
         exit 1
     fi
 
-    if ! aws sts get-caller-identity --output text; then
+    if ! aws sts get-caller-identity --output text >/dev/null; then
         if [ -z ${AWS_SECRET_ACCESS_KEY} && -z ${AWS_ACCESS_KEY_ID} ]; then
             if [ -z ${AWS_ROLE_ARN} && -z ${AWS_WEB_IDENTITY_TOKEN_FILE} ]; then
                 echo "Missing AWS Credential Environment Variables!"
@@ -25,14 +25,14 @@ _custom_driver_get_secret() {
         fi
     fi
 
-    if ! aws sts get-caller-identity --output text; then
+    if ! aws sts get-caller-identity --output text >/dev/null; then
         if [ -z ${AWS_DEFAULT_REGION} || -z ${AWS_REGION} ]; then
             echo "Missing AWS Region where the Secrets exist"
             exit 1
         fi
     fi
 
-    if ! aws sts get-caller-identity --output text; then
+    if ! aws sts get-caller-identity --output text >/dev/null; then
         if [ ! -z ${AWS_ROLE_ARN} || ! -z ${AWS_WEB_IDENTITY_TOKEN_FILE} ]; then
             aws sts assume-role-with-web-identity \
                 --role-arn $AWS_ROLE_ARN \
@@ -49,9 +49,9 @@ _custom_driver_get_secret() {
         fi
     fi
 
-    if ! aws secretsmanager get-secret-value --secret-id ${_SECRET_ID} | jq --raw-output '.SecretString' | jq -r .${_SECRET_KEY}; then
+    if ! aws secretsmanager get-secret-value --secret-id ${_SECRET_ID} --output json | jq --raw-output '.SecretString' | jq -r .${_SECRET_KEY}; then
         echo "Error while get secret from aws secrets manager!" >&2
-        echo aws secretsmanager get-secret-value --secret-id "${_SECRET_ID}" | jq --raw-output '.SecretString' | jq -r ."${_SECRET_KEY}" >&2
+        echo aws secretsmanager get-secret-value --secret-id "${_SECRET_ID}" --output json | jq --raw-output '.SecretString' | jq -r ."${_SECRET_KEY}" >&2
         exit 1
     fi
 }
