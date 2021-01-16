@@ -88,7 +88,7 @@ with open(os.environ["FILE_INPUT_PATH"]) as file:
     secrets_file_dump = yaml.load(file, Loader=yaml.FullLoader)
     secrets = secrets_file_dump["secrets"]
     for key, value in secrets.items():
-        if 'aws-secretsmanager' in value:
+        if '!aws-secretsmanager' in value:
             value_list = value.split(" ")
             split_list = value_list[1].split("#")
             secrets_id_name = split_list[0]
