@@ -6,7 +6,7 @@ _DRIVER_REGEX='aws-secretsmanager [A-z0-9][A-z0-9/\-]*\#[A-z0-9][A-z0-9-]*'
 # shellcheck source=scripts/drivers/_custom.sh
 . "${SCRIPT_DIR}/drivers/_custom.sh"
 
-common_codebase() {
+aws_credentials_guardrails() {
     if [ "${_type}" != "yaml" ]; then
         echo "Only decryption of yaml files are allowed!"
         exit 1
@@ -51,7 +51,7 @@ _custom_driver_get_secret() {
     _SECRET_ID="${2%#*}"
     _SECRET_KEY="${2#*#}"
 
-    common_codebase
+    aws_credentials_guardrails
 
     if ! aws secretsmanager get-secret-value --secret-id ${_SECRET_ID} --output json | jq --raw-output '.SecretString' | jq -r .${_SECRET_KEY}; then
         echo "Error while get secret from aws secrets manager!" >&2
@@ -70,7 +70,7 @@ driver_decrypt_file() {
     _input=${2}
     _output=${3}
 
-    common_codebase
+    aws_credentials_guardrails
 
     export FILE_INPUT_PATH=${_input}
     export FILE_OUTPUT_PATH=${_output}
