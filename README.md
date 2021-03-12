@@ -1,9 +1,10 @@
 [![CI](https://github.com/jkroepke/helm-secrets/workflows/CI/badge.svg)](https://github.com/jkroepke/helm-secrets/)
-[![License](https://img.shields.io/github/license/jkroepke/helm-secrets.svg)](https://github.com/jkroepke/helm-secrets/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/jkroepke/helm-secrets.svg)](https://github.com/jkroepke/helm-secrets/blob/main/LICENSE)
 [![Current Release](https://img.shields.io/github/release/jkroepke/helm-secrets.svg)](https://github.com/jkroepke/helm-secrets/releases/latest)
+[![GitHub all releases](https://img.shields.io/github/downloads/jkroepke/helm-secrets/total?logo=github)](https://github.com/jkroepke/helm-secrets/releases/latest)
 [![GitHub issues](https://img.shields.io/github/issues/jkroepke/helm-secrets.svg)](https://github.com/jkroepke/helm-secrets/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/jkroepke/helm-secrets.svg)](https://github.com/jkroepke/helm-secrets/pulls)
-[![codecov](https://codecov.io/gh/jkroepke/helm-secrets/branch/master/graph/badge.svg?token=4qAukyB2yX)](https://codecov.io/gh/jkroepke/helm-secrets)
+[![codecov](https://codecov.io/gh/jkroepke/helm-secrets/branch/main/graph/badge.svg?token=4qAukyB2yX)](https://codecov.io/gh/jkroepke/helm-secrets)
 
 # helm-secrets
 
@@ -20,14 +21,16 @@ In meanwhile, this project is officially listed on the [community projects side]
 ### Decrypt secrets via plugin command
 
 Wraps the whole helm command. Slow on multiple value files.
-```
+
+```bash
 helm secrets upgrade name . -f secrets.yaml
 ```
 
 ### Decrypt secrets via protocol handler
 
 Run decrypted command on specific value files.
-```
+
+```bash
 helm upgrade name . -f secrets://secrets.yaml
 ```
 
@@ -94,9 +97,9 @@ By default, helm plugin install does this for you.
 
 ```bash
 # Install a specific version (recommend)
-helm plugin install https://github.com/jkroepke/helm-secrets --version v3.4.0
+helm plugin install https://github.com/jkroepke/helm-secrets --version v3.5.0
 
-# Install latest unstable version from master branch
+# Install latest unstable version from main branch
 helm plugin install https://github.com/jkroepke/helm-secrets
 ```
 
@@ -118,10 +121,10 @@ curl -LsSf https://github.com/jkroepke/helm-secrets/releases/latest/download/hel
 
 ```bash
 # Windows (inside cmd, needs to be verified)
-curl -LsSf https://github.com/jkroepke/helm-secrets/releases/download/v3.4.0/helm-secrets.tar.gz | tar -C "%APPDATA%\helm\plugins" -xzf-
+curl -LsSf https://github.com/jkroepke/helm-secrets/releases/download/v3.5.0/helm-secrets.tar.gz | tar -C "%APPDATA%\helm\plugins" -xzf-
 
 # MacOS / Linux
-curl -LsSf https://github.com/jkroepke/helm-secrets/releases/download/v3.4.0/helm-secrets.tar.gz | tar -C "$(helm env HELM_PLUGINS)" -xzf-
+curl -LsSf https://github.com/jkroepke/helm-secrets/releases/download/v3.5.0/helm-secrets.tar.gz | tar -C "$(helm env HELM_PLUGINS)" -xzf-
 ```
 
 ### Installation on Helm 2
@@ -129,6 +132,7 @@ curl -LsSf https://github.com/jkroepke/helm-secrets/releases/download/v3.4.0/hel
 Helm 2 doesn't support downloader plugins. Since unknown keys in `plugin.yaml` are fatal, then plugin installation need special handling.
 
 Error on Helm 2 installation:
+
 ```
 # helm plugin install https://github.com/jkroepke/helm-secrets
 Error: yaml: unmarshal errors:
@@ -150,16 +154,16 @@ Client [here](https://github.com/adorsys-containers/ci-helm/blob/f9a8a5bf8953ab8
 
 It's possible to use another secret driver then sops, e.g. Hasicorp Vault.
 
-Start by a copy of [sops driver](https://github.com/jkroepke/helm-secrets/blob/master/scripts/drivers/sops.sh) and adjust to your own needs.
+Start by a copy of [sops driver](https://github.com/jkroepke/helm-secrets/blob/main/scripts/drivers/sops.sh) and adjust to your own needs.
 
-The custom driver can be load via `SECRET_DRIVER` parameter or `-d` option (higher preference):
+The custom driver can be load via `HELM_SECRETS_DRIVER` parameter or `-d` option (higher preference):
 
 ```bash
 # Example for in-tree drivers via option
 helm secrets -d sops view ./tests/assets/helm_vars/secrets.yaml
 
 # Example for in-tree drivers via environment variable
-SECRET_DRIVER=vault helm secrets view ./tests/assets/helm_vars/secrets.yaml
+HELM_SECRETS_DRIVER=vault helm secrets view ./tests/assets/helm_vars/secrets.yaml
 
 # Example for out-of-tree drivers
 helm secrets -d ./path/to/driver.sh view ./tests/assets/helm_vars/secrets.yaml
@@ -169,11 +173,32 @@ Pull Requests are much appreciated.
 
 The driver option is a global one. A file level switch isn't supported yet.
 
+## Pass additional arguments to secret driver
+
+```bash
+helm secrets -a "--verbose" view ./tests/assets/helm_vars/secrets.yaml
+```
+
+results into:
+
+```
+[PGP]    INFO[0000] Decryption succeeded                          fingerprint=D6174A02027050E59C711075B430C4E58E2BBBA3
+[SOPS]   INFO[0000] Data key recovered successfully
+[SOPS]   DEBU[0000] Decrypting tree
+[helm-secrets] Decrypt: tests/assets/values/sops/secrets.yaml
+==> Linting examples/sops
+[INFO] Chart.yaml: icon is recommended
+
+1 chart(s) linted, 0 chart(s) failed
+
+[helm-secrets] Removed: tests/assets/values/sops/secrets.yaml.dec
+```
+
 ## Main features
 
 The current version of this plugin using [mozilla/sops](https://github.com/mozilla/sops/) by default as backend.
 
-[Hashicorp Vault](http://vaultproject.io/) is supported as secret source since v3.2.0, too. In addition, [sops support vault since v3.6.0 natively](https://github.com/mozilla/sops#encrypting-using-hashicorp-vault). 
+[Hashicorp Vault](http://vaultproject.io/) is supported as secret source since v3.2.0, too. In addition, [sops support vault since v3.6.0 natively](https://github.com/mozilla/sops#encrypting-using-hashicorp-vault).
 
 What kind of problems this plugin solves:
 
@@ -194,16 +219,20 @@ If you are using sops (used by default) you have some additional features:
 
 An additional documentation, resources and examples can be found [here](USAGE.md).
 
+### ArgoCD support
+
+helm-secrets could detect an ArgoCD environment by the `ARGOCD_APP_NAME` environment variable. If detected, `HELM_SECRETS_QUIET` is set to `true`.
+
 ## Moving parts of project
 
-* [`scripts/install.sh`](scripts/install.sh) - Script used as the hook to download and install sops and install git diff configuration for helm-secrets files.
-* [`scripts/run.sh`](scripts/run.sh) - Main helm-secrets plugin code for all helm-secrets plugin actions available in `helm secrets help` after plugin install
-* [`scripts/drivers`](scripts/drivers) - Location of the in-tree secrets drivers
-* [`scripts/commands`](scripts/commands) - Sub Commands of `helm secrets` are defined here.
-* [`scripts/lib`](scripts/lib) - Common functions used by `helm secrets`.
-* [`scripts/wrapper`](scripts/wrapper) - Wrapper scripts for Windows systems.
-* [`tests`](tests) - Test scripts to check if all parts of the plugin work. Using test assets with PGP keys to make real tests on real data with real encryption/decryption. See [`tests/README.md`](tests/README.md) for more informations.
-* [`examples`](examples) - Some example secrets.yaml 
+- [`scripts/install.sh`](scripts/install.sh) - Script used as the hook to download and install sops and install git diff configuration for helm-secrets files.
+- [`scripts/run.sh`](scripts/run.sh) - Main helm-secrets plugin code for all helm-secrets plugin actions available in `helm secrets help` after plugin install
+- [`scripts/drivers`](scripts/drivers) - Location of the in-tree secrets drivers
+- [`scripts/commands`](scripts/commands) - Sub Commands of `helm secrets` are defined here.
+- [`scripts/lib`](scripts/lib) - Common functions used by `helm secrets`.
+- [`scripts/wrapper`](scripts/wrapper) - Wrapper scripts for Windows systems.
+- [`tests`](tests) - Test scripts to check if all parts of the plugin work. Using test assets with PGP keys to make real tests on real data with real encryption/decryption. See [`tests/README.md`](tests/README.md) for more informations.
+- [`examples`](examples) - Some example secrets.yaml
 
 ## Copyright and license
 

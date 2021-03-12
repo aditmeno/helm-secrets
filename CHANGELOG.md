@@ -8,9 +8,32 @@ Allow override sops version on installation
 
 ## [Unreleased]
 
+### Added
+- Detect ArgoCD environment by `ARGOCD_APP_NAME` environment variable and set `HELM_SECRETS_QUIET=true` by default. (https://github.com/jkroepke/helm-secrets/pull/83)
+
+## [3.5.0] - 2021-02-20
+
+### Added
+- Added `--driver-args` to pass additional argument to underlying commands (https://github.com/jkroepke/helm-secrets/pull/82)
+
+### Fixes
+- "grep: Invalid range end" if locale is not C (https://github.com/jkroepke/helm-secrets/pull/81)
+
+## [3.4.2] - 2021-02-19
+
+### Changed
+- Dev: Rename `master` branch to `main`
+
+### Fixes
+- "grep: Invalid range end" if locale is not C (https://github.com/jkroepke/helm-secrets/pull/79)
+
+## [3.4.1] - 2021-01-23
+
 ### Fixes
 - Handling `--` inside command line arguments
 - Fix handling errors with remote files
+- Strip yaml doc separator if vault driver is used (https://github.com/jkroepke/helm-secrets/pull/70)
+- Incompatibilities if sed links to gnu sed on Mac OS (https://github.com/jkroepke/helm-secrets/pull/72)
 
 ## [3.4.0] - 2020-12-26
 
@@ -86,7 +109,10 @@ Started a fork of https://github.com/zendesk/helm-secrets
 - Support all helm sub commands and plugins
 
 
-[Unreleased]: https://github.com/jkroepke/helm-secrets/compare/v3.4.0...HEAD
+[Unreleased]: https://github.com/jkroepke/helm-secrets/compare/v3.5.0...HEAD
+[3.5.0]: https://github.com/jkroepke/helm-secrets/compare/v3.4.2...v3.5.0
+[3.4.2]: https://github.com/jkroepke/helm-secrets/compare/v3.4.1...v3.4.2
+[3.4.1]: https://github.com/jkroepke/helm-secrets/compare/v3.4.0...v3.4.1
 [3.4.0]: https://github.com/jkroepke/helm-secrets/compare/v3.3.5...v3.4.0
 [3.3.5]: https://github.com/jkroepke/helm-secrets/compare/v3.3.4...v3.3.5
 [3.3.4]: https://github.com/jkroepke/helm-secrets/compare/v3.3.0...v3.3.4
